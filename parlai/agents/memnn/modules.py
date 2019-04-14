@@ -13,7 +13,7 @@ from functools import lru_cache
 def opt_to_kwargs(opt):
     """Get kwargs for seq2seq from opt."""
     kwargs = {}
-    for k in ['mem_size', 'time_features', 'position_encoding', 'hops']:
+    for k in ['memsize', 'time_features', 'position_encoding', 'hops']:
         if k in opt:
             kwargs[k] = opt[k]
     return kwargs
@@ -24,7 +24,7 @@ class MemNN(nn.Module):
 
     def __init__(
         self, num_features, embedding_size, hops=1,
-        mem_size=32, time_features=False, position_encoding=False,
+        memsize=32, time_features=False, position_encoding=False,
         dropout=0, padding_idx=0,
     ):
         """Initialize memnn model.
@@ -36,23 +36,10 @@ class MemNN(nn.Module):
         # prepare features
         self.hops = hops
 
-        # time features: we learn an embedding for each memory slot
-        self.extra_features = 0
-        if time_features:
-            self.extra_features += mem_size
-            self.time_features = torch.LongTensor(
-                range(num_features, num_features + mem_size))
-
         def embedding(use_extra_feats=True):
-            if use_extra_feats:
-                return Embed(num_features + self.extra_features,
-                             embedding_size,
-                             position_encoding=position_encoding,
-                             padding_idx=padding_idx)
-            else:
-                return Embed(num_features, embedding_size,
-                             position_encoding=position_encoding,
-                             padding_idx=padding_idx)
+            return Embed(num_features, embedding_size,
+                         position_encoding=position_encoding,
+                         padding_idx=padding_idx)
 
         # TODO: add token dropout?
         # TODO: add dropout
