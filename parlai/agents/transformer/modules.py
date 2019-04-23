@@ -69,6 +69,7 @@ def _build_decoder(opt, dictionary, embedding=None, padding_idx=None,
 class TransformerMemNetModel(nn.Module):
     """Model which takes context, memories, candidates and encodes them"""
     def __init__(self, opt, dictionary):
+        
         super().__init__()
         self.opt = opt
         self.pad_idx = dictionary[dictionary.null_token]
@@ -303,6 +304,7 @@ class TransformerEncoder(nn.Module):
             mask is a ByteTensor of shape [batch, seq_len], filled with 1 when
             inside the sequence and 0 outside.
         """
+        import pdb; pdb.set_trace()
         mask = input != self.padding_idx
         positions = (mask.cumsum(dim=1, dtype=torch.int64) - 1).clamp_(min=0)
         tensor = self.embeddings(input)
@@ -348,6 +350,7 @@ class TransformerEncoderLayer(nn.Module):
         self.dropout = nn.Dropout(p=dropout)
 
     def forward(self, tensor, mask):
+        import pdb; pdb.set_trace()  
         tensor = tensor + self.dropout(self.attention(tensor, mask=mask))
         tensor = _normalize(tensor, self.norm1)
         tensor = tensor + self.dropout(self.ffn(tensor))
@@ -520,6 +523,7 @@ class TransformerDecoderLayer(nn.Module):
 
 class TransformerGeneratorModel(TorchGeneratorModel):
     def __init__(self, opt, dictionary):
+        
         self.pad_idx = dictionary[dictionary.null_token]
         self.start_idx = dictionary[dictionary.start_token]
         self.end_idx = dictionary[dictionary.end_token]

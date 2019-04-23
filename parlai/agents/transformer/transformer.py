@@ -23,6 +23,7 @@ warn_once(
 
 
 def add_common_cmdline_args(argparser):
+
     argparser.add_argument('-esz', '--embedding-size', type=int, default=300,
                            help='Size of all embedding layers')
     argparser.add_argument('-nl', '--n-layers', type=int, default=2)

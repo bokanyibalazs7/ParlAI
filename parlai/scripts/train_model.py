@@ -201,6 +201,7 @@ class TrainLoop():
         # if python is called from a non-interactive shell, like a bash script,
         # it will by-default ignore SIGINTs, and KeyboardInterrupt exceptions are
         # not produced. This line brings them back
+        
         signal.signal(signal.SIGINT, signal.default_int_handler)
 
         if isinstance(opt, ParlaiParser):
