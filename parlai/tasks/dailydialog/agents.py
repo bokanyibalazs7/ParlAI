@@ -108,7 +108,6 @@ class NoStartTeacher(Convai2Teacher):
     def get(self, episode_idx, entry_idx=0):
         full_eps = self.all_eps[episode_idx]
         entries = full_eps['dialogue']
-
         # Sometimes we're speaker 1 and sometimes we're speaker 2.
         # We can't be speaker 1 if dialog has only 2 turns.
         speaker_id = int(episode_idx >= len(self.data))
@@ -125,6 +124,7 @@ class NoStartTeacher(Convai2Teacher):
             'labels': [my_turn['text']],
             'episode_done': episode_done,
         }
+        
         return action
 
 

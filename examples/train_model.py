@@ -11,6 +11,7 @@ For documentation, see parlai.scripts.train_model.
 from parlai.scripts.train_model import TrainLoop, setup_args
 
 if __name__ == '__main__':
+    #import pdb; pdb.set_trace()
     parser = setup_args()
     opt = parser.parse_args()
     TrainLoop(opt).train()

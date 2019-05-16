@@ -8,9 +8,12 @@ import torch.nn.functional as F
 
 import math
 import numpy as np
+import os
 
 from parlai.core.torch_generator_agent import TorchGeneratorModel
 from parlai.core.utils import neginf
+from parlai.agents.transformer.bert_encoder import BertEncoder
+
 
 LAYER_NORM_EPS = 1e-12  # Epsilon for layer norm.
 
@@ -23,6 +26,7 @@ def _normalize(tensor, norm_layer):
 
 def _create_embeddings(dictionary, embedding_size, padding_idx):
     """Create and initialize word embeddings."""
+    
     e = nn.Embedding(len(dictionary), embedding_size, padding_idx)
     nn.init.normal_(e.weight, mean=0, std=embedding_size ** -0.5)
     nn.init.constant_(e.weight[padding_idx], 0)
@@ -292,10 +296,26 @@ class TransformerEncoder(nn.Module):
         self.variant = variant
         self.n_segments = n_segments
 
+
+
+
+
+
+        
+        self.bert_encoder = BertEncoder()
+        self.bert_encoder.loadDict()
+
+
+
+
+
+
+
+
         self.out_dim = embedding_size
         assert embedding_size % n_heads == 0, \
             'Transformer embedding size must be a multiple of n_heads'
-
+        
         # check input formats:
         if embedding is not None:
             assert (
@@ -350,16 +370,20 @@ class TransformerEncoder(nn.Module):
             mask is a ByteTensor of shape [batch, seq_len], filled with 1 when
             inside the sequence and 0 outside.
         """
+        
+        
+        tensor = self.bert_encoder.forward(input)
         import pdb; pdb.set_trace()
+        
         mask = input != self.padding_idx
-        if positions is None:
+        """if positions is None:
             positions = (mask.cumsum(dim=1, dtype=torch.int64) - 1).clamp_(min=0)
         tensor = self.embeddings(input)
         if self.embeddings_scale:
             tensor = tensor * np.sqrt(self.dim)
-
+        
         tensor = tensor + self.position_embeddings(positions).expand_as(tensor)
-
+        
         if self.n_segments >= 1:
             if segments is None:
                 segments = torch.zeros_like(input)
@@ -373,8 +397,8 @@ class TransformerEncoder(nn.Module):
 
         tensor *= mask.unsqueeze(-1).type_as(tensor)
         for i in range(self.n_layers):
-            tensor = self.layers[i](tensor, mask)
-
+            tensor = self.layers[i](tensor, mask)"""
+        
         if self.reduction_type == 'first':
             return tensor[:, 0, :]
         elif self.reduction_type == 'max':
@@ -421,7 +445,6 @@ class TransformerEncoderLayer(nn.Module):
         self.dropout = nn.Dropout(p=dropout)
 
     def forward(self, tensor, mask):
-        import pdb; pdb.set_trace()  
         tensor = tensor + self.dropout(self.attention(tensor, mask=mask))
         tensor = _normalize(tensor, self.norm1)
         tensor = tensor + self.dropout(self.ffn(tensor))
@@ -520,6 +543,7 @@ class TransformerDecoder(nn.Module):
             ))
 
     def forward(self, input, encoder_state, incr_state=None):
+        import pdb; pdb.set_trace()
         encoder_output, encoder_mask = encoder_state
 
         seq_len = input.size(1)
@@ -575,6 +599,7 @@ class TransformerDecoderLayer(nn.Module):
         self.norm3 = nn.LayerNorm(embedding_size, eps=LAYER_NORM_EPS)
 
     def forward(self, x, encoder_output, encoder_mask):
+        #import pdb; pdb.set_trace()
         decoder_mask = self._create_selfattn_mask(x)
         # first self attn
         residual = x

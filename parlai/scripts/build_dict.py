@@ -130,7 +130,6 @@ def build_dict(opt, skip_if_built=False):
                 pbar.update(1)
         if pbar:
             pbar.close()
-
     dictionary.save(opt['dict_file'], sort=True)
     print('[ dictionary built with {} tokens in {}s ]'.format(
         len(dictionary), round(log_time.total_time(), 2)))

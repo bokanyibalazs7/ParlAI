@@ -506,7 +506,6 @@ class DictionaryAgent(Agent):
         """
         print('Dictionary: loading dictionary from {}'.format(
               filename))
-
         lower_special = self.null_token == self.null_token.lower()
         SPECIAL_TOKENS = {'__UNK__', '__NULL__', '__END__', '__START__'}
         with codecs.open(filename, 'r', encoding='utf-8', errors='ignore') as read:

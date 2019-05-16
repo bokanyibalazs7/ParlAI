@@ -49,6 +49,7 @@ def display_data(opt):
         # world.display() you could access world.acts[0] directly
         print(world.display() + '\n~~')
 
+
         if world.epoch_done():
             print('EPOCH DONE')
             break

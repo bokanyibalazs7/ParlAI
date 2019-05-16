@@ -15,7 +15,6 @@ import random
 
 if __name__ == '__main__':
     random.seed(42)
-
     # Get command line arguments
     parser = setup_args()
     opt = parser.parse_args()
