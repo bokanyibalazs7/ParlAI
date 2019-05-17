@@ -11,7 +11,7 @@ class BertEncoder():
         def __init__(self):
             self.bc = BertClient()
             self.vocab = {}
-
+            self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
             
             
         def loadDict(self):
@@ -37,7 +37,8 @@ class BertEncoder():
             
         def forward(self, input):
             sentences = np.ndarray(shape=(input.shape[0], input.shape[1], 768))
-            
+            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
             for j in range(input.shape[0]):
                 to_encode = []
                 for i in range(input.shape[1]):
@@ -51,4 +52,30 @@ class BertEncoder():
                     sentences[j] = np.concatenate(encoded, nulls)
                 else:
                     sentences[j] = encoded
-            return torch.from_numpy(sentences)
+            sentences = sentences.astype('float32')
+            return torch.from_numpy(sentences).to(self.device)
+            
+            
+            
+        def forward_slower(self, input):
+            sentences = np.ndarray(shape=(input.shape[0], input.shape[1], 768))
+            to_encode = []
+            import pdb; pdb.set_trace()
+            for j in range(input.shape[0]):
+                for i in range(input.shape[1]):
+                    if self.vocab[input[j, i].item()] is not '__null__':
+                        to_encode.append(self.vocab[input[j, i].item()])
+                to_encode.append('end_of_sentence')
+            encoded = self.bc.encode(to_encode)
+            indicies = [-1] + [i for i, x in enumerate(to_encode) if x == 'end_of_sentence']
+
+            for k in range(len(indicies)-1):
+                sentence = encoded[indicies[k]+1:indicies[k+1]]
+                null_size = sentences.shape[1] - sentence.shape[0]
+                if null_size is not 0:
+                    nulls = np.ndarray(shape=(null_size, 768))
+                    sentences[k] = np.concatenate(sentence, nulls)
+                else:
+                    sentences[k] = sentence
+            sentences = sentences.astype('float32')
+            return torch.from_numpy(sentences).to(self.device)

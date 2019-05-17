@@ -373,7 +373,6 @@ class TransformerEncoder(nn.Module):
         
         
         tensor = self.bert_encoder.forward(input)
-        import pdb; pdb.set_trace()
         
         mask = input != self.padding_idx
         """if positions is None:
@@ -543,7 +542,6 @@ class TransformerDecoder(nn.Module):
             ))
 
     def forward(self, input, encoder_state, incr_state=None):
-        import pdb; pdb.set_trace()
         encoder_output, encoder_mask = encoder_state
 
         seq_len = input.size(1)
